@@ -1,0 +1,257 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 HUMEAN Control Panel</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .status-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .status-card {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+        }
+        .online { background: #27ae60; }
+        .offline { background: #e74c3c; }
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        button {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-start {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-stop {
+            background: #e74c3c;
+            color: white;
+        }
+        .btn-restart {
+            background: #f39c12;
+            color: white;
+        }
+        .btn-dashboard {
+            background: #3498db;
+            color: white;
+        }
+        button:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+        .logs {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .auto-start {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 HUMEAN Control Panel</h1>
+        
+        <div class="status-panel">
+            <div class="status-card">
+                <div class="status-indicator offline" id="serverStatus"></div>
+                <h3>Serveur HUMEAN</h3>
+                <p id="serverStatusText">Déconnecté</p>
+            </div>
+            <div class="status-card">
+                <div class="status-indicator offline" id="apiStatus"></div>
+                <h3>API Status</h3>
+                <p id="apiStatusText">Hors ligne</p>
+            </div>
+        </div>
+
+        <div class="control-buttons">
+            <button class="btn-start" onclick="startServer()">🚀 Démarrer Serveur</button>
+            <button class="btn-stop" onclick="stopServer()">⏹️ Arrêter Serveur</button>
+            <button class="btn-restart" onclick="restartServer()">🔄 Redémarrer</button>
+            <button class="btn-dashboard" onclick="openDashboard()">📊 Ouvrir Dashboard</button>
+        </div>
+
+        <div class="auto-start">
+            <h3>⚙️ Démarrage Automatique</h3>
+            <label>
+                <input type="checkbox" id="autoStart" onchange="toggleAutoStart()">
+                Démarrer HUMEAN automatiquement au lancement du système
+            </label>
+        </div>
+
+        <div class="logs">
+            <h3>📝 Logs du Serveur</h3>
+            <div id="serverLogs">
+                Panel de contrôle initialisé...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let serverProcess = null;
+        let statusCheckInterval = null;
+
+        // Vérifier le statut initial
+        checkServerStatus();
+
+        // Vérifier le statut toutes les 5 secondes
+        statusCheckInterval = setInterval(checkServerStatus, 5000);
+
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('http://localhost:5000/status', { 
+                    method: 'GET',
+                    signal: AbortSignal.timeout(2000) 
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStatus('online', `En ligne - ${data.status}`, data.message);
+                }
+            } catch (error) {
+                updateStatus('offline', 'Hors ligne', 'Serveur non accessible');
+            }
+        }
+
+        function updateStatus(status, statusText, message) {
+            const serverStatus = document.getElementById('serverStatus');
+            const serverStatusText = document.getElementById('serverStatusText');
+            const apiStatus = document.getElementById('apiStatus');
+            const apiStatusText = document.getElementById('apiStatusText');
+
+            if (status === 'online') {
+                serverStatus.className = 'status-indicator online';
+                serverStatusText.textContent = statusText;
+                apiStatus.className = 'status-indicator online';
+                apiStatusText.textContent = message;
+            } else {
+                serverStatus.className = 'status-indicator offline';
+                serverStatusText.textContent = statusText;
+                apiStatus.className = 'status-indicator offline';
+                apiStatusText.textContent = message;
+            }
+        }
+
+        async function startServer() {
+            addLog('🚀 Démarrage du serveur HUMEAN...');
+            
+            try {
+                // Utiliser une API pour démarrer le serveur
+                const response = await fetch('/api/start-server', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    addLog('✅ Serveur démarré avec succès!');
+                    setTimeout(checkServerStatus, 3000);
+                } else {
+                    addLog('❌ Erreur lors du démarrage');
+                }
+            } catch (error) {
+                addLog('⚠️  Le serveur de contrôle est hors ligne');
+                addLog('💡 Essayez: python humean_server.py dans un terminal');
+            }
+        }
+
+        async function stopServer() {
+            addLog('⏹️ Arrêt du serveur HUMEAN...');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/shutdown', {
+                    method: 'POST'
+                });
+                addLog('✅ Serveur arrêté');
+                updateStatus('offline', 'Arrêté', 'Serveur éteint');
+            } catch (error) {
+                addLog('✅ Serveur probablement arrêté');
+                updateStatus('offline', 'Arrêté', 'Serveur éteint');
+            }
+        }
+
+        async function restartServer() {
+            addLog('🔄 Redémarrage du serveur...');
+            await stopServer();
+            setTimeout(startServer, 2000);
+        }
+
+        function openDashboard() {
+            window.open('humean_dashboard.html', '_blank');
+        }
+
+        function toggleAutoStart() {
+            const autoStart = document.getElementById('autoStart').checked;
+            addLog(`⚙️ Démarrage auto: ${autoStart ? 'activé' : 'désactivé'}`);
+            
+            // Sauvegarder la préférence
+            localStorage.setItem('humeanAutoStart', autoStart);
+        }
+
+        function addLog(message) {
+            const logs = document.getElementById('serverLogs');
+            const timestamp = new Date().toLocaleTimeString();
+            logs.innerHTML += `[${timestamp}] ${message}<br>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        // Charger les préférences
+        document.addEventListener('DOMContentLoaded', function() {
+            const autoStart = localStorage.getItem('humeanAutoStart') === 'true';
+            document.getElementById('autoStart').checked = autoStart;
+            
+            if (autoStart) {
+                setTimeout(startServer, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
