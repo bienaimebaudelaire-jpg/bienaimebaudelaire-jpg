@@ -262,6 +262,58 @@ def initialize_system():
     logger.info("🚀 Auto-apprentissage HUMEAN activé")
     logger.info("📈 Optimisation cognitive appliquée")
 
+
+# =============================================================================
+# 🚀 ROUTES AUTO-AMÉLIORATION HUMEAN
+# =============================================================================
+
+try:
+    from humean_auto_improvement import humean_auto_improver
+    print("✅ Système d'auto-amélioration chargé")
+except ImportError as e:
+    print(f"⚠️  Auto-improvement non disponible: {e}")
+    humean_auto_improver = None
+
+@app.route('/api/auto-improvement/analyze-and-apply', methods=['POST'])
+def auto_improve():
+    """Endpoint pour l'auto-amélioration automatique"""
+    if humean_auto_improver is None:
+        return jsonify({
+            "status": "error", 
+            "message": "Système d'auto-amélioration non disponible"
+        }), 501
+    
+    try:
+        data = request.json
+        request_text = data.get('request', 'Analyse et améliore le système')
+        
+        print(f"🚀 Déclenchement auto-amélioration: {request_text}")
+        
+        result = humean_auto_improver.analyze_and_apply(request_text)
+        
+        return jsonify({
+            "status": "success",
+            "message": "Auto-amélioration complétée avec succès",
+            "data": result
+        })
+        
+    except Exception as e:
+        print(f"❌ Erreur auto-amélioration: {e}")
+        return jsonify({
+            "status": "error", 
+            "message": f"Erreur lors de l'auto-amélioration: {str(e)}"
+        }), 500
+
+@app.route('/api/auto-improvement/status', methods=['GET'])
+def auto_improvement_status():
+    """Statut du système d'auto-amélioration"""
+    return jsonify({
+        "status": "available" if humean_auto_improver else "unavailable",
+        "version": "1.0",
+        "capabilities": ["self_analysis", "automatic_implementation", "github_sync"]
+    })
+
 if __name__ == '__main__':
     initialize_system()
     app.run(host='0.0.0.0', port=5000, debug=False)
+

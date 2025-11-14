@@ -856,6 +856,50 @@
         }
 
         
+        
+        // 🚀 Auto-amélioration HUMEAN
+        async function triggerAutoImprovement() {
+            const question = "Analyse ton infrastructure complète et applique automatiquement les 2 améliorations les plus critiques pour optimiser tes performances";
+            
+            showLoading('autoImprovementResult', '🚀 HUMEAN s\'auto-améliore...');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/auto-improvement/analyze-and-apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ request: question })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    let output = `🎯 AUTO-AMÉLIORATION RÉUSSIE!\n\n`;
+                    output += `📊 ANALYSE EFFECTUÉE:\n`;
+                    output += `• ${result.data.analysis.identified_issues.length} problèmes critiques identifiés\n\n`;
+                    
+                    output += `🔧 AMÉLIORATIONS APPLIQUÉES:\n`;
+                    result.data.implementation_results.details.forEach(detail => {
+                        if (detail.status === 'COMPLETED') {
+                            output += `✅ ${detail.file}\n   → ${detail.impact}\n\n`;
+                        }
+                    });
+                    
+                    output += `💾 Tout a été sauvegardé automatiquement sur GitHub!`;
+                    
+                    document.getElementById('autoImprovementResult').textContent = output;
+                    addLog(`🚀 HUMEAN a appliqué ${result.data.implementation_results.completed_actions} améliorations automatiques!`);
+                    
+                } else {
+                    document.getElementById('autoImprovementResult').textContent = 
+                        `❌ Erreur: ${result.message}`;
+                }
+                
+            } catch (error) {
+                document.getElementById('autoImprovementResult').textContent = 
+                    `❌ Erreur de connexion: ${error}`;
+            }
+        }
+
         // Synchronisation GitHub
         let autoSyncEnabled = {
             learning: true,
@@ -968,4 +1012,5 @@
     </script>
 </body>
 </html>
+
 
