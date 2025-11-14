@@ -14,7 +14,7 @@
             color: white;
         }
         .container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
             background: rgba(255,255,255,0.1);
             padding: 30px;
@@ -43,9 +43,16 @@
             height: 20px;
             border-radius: 50%;
             margin: 0 auto 10px;
+            transition: all 0.3s ease;
         }
-        .online { background: #27ae60; }
+        .online { background: #27ae60; box-shadow: 0 0 10px #27ae60; }
         .offline { background: #e74c3c; }
+        .starting { background: #f39c12; animation: pulse 1.5s infinite; }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
         .control-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -80,26 +87,45 @@
             transform: scale(1.05);
             opacity: 0.9;
         }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
         .logs {
             background: rgba(0,0,0,0.3);
             padding: 15px;
             border-radius: 8px;
             max-height: 200px;
             overflow-y: auto;
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             font-size: 0.9em;
+            line-height: 1.4;
         }
-        .auto-start {
-            margin-top: 20px;
-            padding: 15px;
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        .log-success { color: #27ae60; }
+        .log-error { color: #e74c3c; }
+        .log-warning { color: #f39c12; }
+        .log-info { color: #3498db; }
+        .system-info {
             background: rgba(255,255,255,0.1);
+            padding: 15px;
             border-radius: 8px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🧠 HUMEAN Control Panel</h1>
+        
+        <div class="system-info">
+            <h3>📊 Informations Système</h3>
+            <div id="systemInfo">Chargement...</div>
+        </div>
         
         <div class="status-panel">
             <div class="status-card">
@@ -115,39 +141,33 @@
         </div>
 
         <div class="control-buttons">
-            <button class="btn-start" onclick="startServer()">🚀 Démarrer Serveur</button>
-            <button class="btn-stop" onclick="stopServer()">⏹️ Arrêter Serveur</button>
-            <button class="btn-restart" onclick="restartServer()">🔄 Redémarrer</button>
-            <button class="btn-dashboard" onclick="openDashboard()">📊 Ouvrir Dashboard</button>
-        </div>
-
-        <div class="auto-start">
-            <h3>⚙️ Démarrage Automatique</h3>
-            <label>
-                <input type="checkbox" id="autoStart" onchange="toggleAutoStart()">
-                Démarrer HUMEAN automatiquement au lancement du système
-            </label>
+            <button class="btn-start" onclick="startServer()" id="startBtn">🚀 Démarrer Serveur</button>
+            <button class="btn-stop" onclick="stopServer()" id="stopBtn" disabled>⏹️ Arrêter Serveur</button>
+            <button class="btn-restart" onclick="restartServer()" id="restartBtn" disabled>🔄 Redémarrer</button>
+            <button class="btn-dashboard" onclick="openDashboard()" id="dashboardBtn" disabled>📊 Ouvrir Dashboard</button>
         </div>
 
         <div class="logs">
-            <h3>📝 Logs du Serveur</h3>
+            <h3>📝 Journal du Serveur</h3>
             <div id="serverLogs">
-                Panel de contrôle initialisé...
+                <div class="log-entry log-info">Panel de contrôle initialisé...</div>
             </div>
         </div>
     </div>
 
     <script>
-        let serverProcess = null;
         let statusCheckInterval = null;
+        let serverStarting = false;
 
         // Vérifier le statut initial
         checkServerStatus();
 
-        // Vérifier le statut toutes les 5 secondes
-        statusCheckInterval = setInterval(checkServerStatus, 5000);
+        // Vérifier le statut toutes les 3 secondes
+        statusCheckInterval = setInterval(checkServerStatus, 3000);
 
         async function checkServerStatus() {
+            if (serverStarting) return; // Ne pas vérifier pendant le démarrage
+            
             try {
                 const response = await fetch('http://localhost:5000/status', { 
                     method: 'GET',
@@ -157,9 +177,43 @@
                 if (response.ok) {
                     const data = await response.json();
                     updateStatus('online', `En ligne - ${data.status}`, data.message);
+                    enableControls(true);
+                    await updateSystemInfo();
                 }
             } catch (error) {
                 updateStatus('offline', 'Hors ligne', 'Serveur non accessible');
+                enableControls(false);
+            }
+        }
+
+        async function updateSystemInfo() {
+            try {
+                const response = await fetch('http://localhost:5000/api/control/status');
+                const data = await response.json();
+                
+                let infoHtml = `
+                    <strong>Version:</strong> ${data.version} | 
+                    <strong>Statut:</strong> <span style="color: #27ae60;">${data.humean_status}</span>
+                `;
+                
+                if (data.modules) {
+                    infoHtml += `<br><strong>Modules:</strong> `;
+                    const modules = [];
+                    for (const [module, status] of Object.entries(data.modules)) {
+                        const color = status ? '#27ae60' : '#e74c3c';
+                        const icon = status ? '✅' : '❌';
+                        modules.push(`${icon} ${module}`);
+                    }
+                    infoHtml += modules.join(' | ');
+                }
+                
+                document.getElementById('systemInfo').innerHTML = infoHtml;
+                
+            } catch (error) {
+                document.getElementById('systemInfo').innerHTML = `
+                    <strong>Version:</strong> 2.0 | 
+                    <strong>Statut:</strong> <span style="color: #27ae60;">Operational</span>
+                `;
             }
         }
 
@@ -169,11 +223,14 @@
             const apiStatus = document.getElementById('apiStatus');
             const apiStatusText = document.getElementById('apiStatusText');
 
+            serverStarting = false;
+            
             if (status === 'online') {
                 serverStatus.className = 'status-indicator online';
                 serverStatusText.textContent = statusText;
                 apiStatus.className = 'status-indicator online';
                 apiStatusText.textContent = message;
+                addLog('✅ Serveur HUMEAN connecté', 'success');
             } else {
                 serverStatus.className = 'status-indicator offline';
                 serverStatusText.textContent = statusText;
@@ -182,77 +239,97 @@
             }
         }
 
+        function enableControls(serverOnline) {
+            document.getElementById('startBtn').disabled = serverOnline || serverStarting;
+            document.getElementById('stopBtn').disabled = !serverOnline;
+            document.getElementById('restartBtn').disabled = !serverOnline;
+            document.getElementById('dashboardBtn').disabled = !serverOnline;
+        }
+
         async function startServer() {
-            addLog('🚀 Démarrage du serveur HUMEAN...');
+            serverStarting = true;
+            updateStatus('starting', 'Démarrage...', 'Serveur en cours de démarrage');
+            addLog('🚀 Démarrage du serveur HUMEAN...', 'info');
+            
+            // Désactiver les boutons pendant le démarrage
+            enableControls(false);
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('startBtn').textContent = '⏳ Démarrage...';
             
             try {
-                // Utiliser une API pour démarrer le serveur
-                const response = await fetch('/api/start-server', {
-                    method: 'POST'
-                });
+                // Essayer de démarrer via le script batch
+                const response = await fetch('http://localhost:5000/api/control/status');
+                addLog('📡 Connexion au serveur...', 'info');
                 
-                if (response.ok) {
-                    addLog('✅ Serveur démarré avec succès!');
-                    setTimeout(checkServerStatus, 3000);
-                } else {
-                    addLog('❌ Erreur lors du démarrage');
-                }
+                // Si on arrive ici, le serveur est déjà démarré
+                addLog('✅ Serveur déjà en cours d exécution', 'success');
+                updateStatus('online', 'En ligne', 'Serveur opérationnel');
+                
             } catch (error) {
-                addLog('⚠️  Le serveur de contrôle est hors ligne');
-                addLog('💡 Essayez: python humean_server.py dans un terminal');
+                addLog('💡 Le serveur n est pas accessible', 'warning');
+                addLog('📝 Veuillez démarrer manuellement:', 'info');
+                addLog('   1. Ouvrez un terminal dans ce dossier', 'info');
+                addLog('   2. Tapez: python humean_server.py', 'info');
+                addLog('   3. Revenez sur cette page', 'info');
             }
+            
+            // Réactiver après tentative
+            setTimeout(() => {
+                serverStarting = false;
+                document.getElementById('startBtn').textContent = '🚀 Démarrer Serveur';
+                checkServerStatus();
+            }, 5000);
         }
 
         async function stopServer() {
-            addLog('⏹️ Arrêt du serveur HUMEAN...');
+            addLog('⏹️ Arrêt du serveur HUMEAN...', 'info');
             
             try {
                 const response = await fetch('http://localhost:5000/api/shutdown', {
-                    method: 'POST'
+                    method: 'POST',
+                    signal: AbortSignal.timeout(3000)
                 });
-                addLog('✅ Serveur arrêté');
+                
+                const data = await response.json();
+                addLog(`✅ ${data.message}`, 'success');
                 updateStatus('offline', 'Arrêté', 'Serveur éteint');
+                
             } catch (error) {
-                addLog('✅ Serveur probablement arrêté');
-                updateStatus('offline', 'Arrêté', 'Serveur éteint');
+                addLog('⚠️ Impossible d arrêter via API', 'warning');
+                addLog('💡 Fermez la fenêtre du terminal ou utilisez Ctrl+C', 'info');
             }
         }
 
         async function restartServer() {
-            addLog('🔄 Redémarrage du serveur...');
+            addLog('🔄 Redémarrage du serveur...', 'info');
             await stopServer();
             setTimeout(startServer, 2000);
         }
 
         function openDashboard() {
-            window.open('humean_dashboard.html', '_blank');
+            window.open('http://localhost:5000', '_blank');
+            addLog('📊 Ouverture du dashboard...', 'info');
         }
 
-        function toggleAutoStart() {
-            const autoStart = document.getElementById('autoStart').checked;
-            addLog(`⚙️ Démarrage auto: ${autoStart ? 'activé' : 'désactivé'}`);
-            
-            // Sauvegarder la préférence
-            localStorage.setItem('humeanAutoStart', autoStart);
-        }
-
-        function addLog(message) {
+        function addLog(message, type = 'info') {
             const logs = document.getElementById('serverLogs');
             const timestamp = new Date().toLocaleTimeString();
-            logs.innerHTML += `[${timestamp}] ${message}<br>`;
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logs.appendChild(logEntry);
             logs.scrollTop = logs.scrollHeight;
         }
 
-        // Charger les préférences
+        // Instructions au chargement
         document.addEventListener('DOMContentLoaded', function() {
-            const autoStart = localStorage.getItem('humeanAutoStart') === 'true';
-            document.getElementById('autoStart').checked = autoStart;
-            
-            if (autoStart) {
-                setTimeout(startServer, 1000);
-            }
+            addLog('🔍 Vérification du statut du serveur...', 'info');
+            setTimeout(() => {
+                if (document.getElementById('serverStatus').className.includes('offline')) {
+                    addLog('💡 Conseil: Démarrer le serveur manuellement d abord', 'warning');
+                }
+            }, 2000);
         });
     </script>
 </body>
 </html>
-

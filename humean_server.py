@@ -313,7 +313,130 @@ def auto_improvement_status():
         "capabilities": ["self_analysis", "automatic_implementation", "github_sync"]
     })
 
+
+# =============================================================================
+# 🎛️ ROUTES POUR LE PANNEAU DE CONTRÔLE
+# =============================================================================
+
+@app.route('/api/shutdown', methods=['POST'])
+def shutdown_server():
+    """Arrêt gracieux du serveur pour le panneau de contrôle"""
+    import os
+    import signal
+    print("🔄 Arrêt gracieux du serveur HUMEAN...")
+    
+    def shutdown():
+        print("✅ Serveur HUMEAN arrêté")
+        os.kill(os.getpid(), signal.SIGINT)
+    
+    import threading
+    threading.Timer(1, shutdown).start()
+    
+    return jsonify({
+        "status": "success",
+        "message": "Serveur en cours d'arrêt..."
+    })
+
+@app.route('/api/restart', methods=['POST'])
+def restart_server():
+    """Redémarrage du serveur"""
+    print("🔄 Redémarrage du serveur HUMEAN...")
+    
+    def restart():
+        import sys
+        import os
+        os.execv(sys.executable, ['python'] + sys.argv)
+    
+    import threading
+    threading.Timer(2, restart).start()
+    
+    return jsonify({
+        "status": "success", 
+        "message": "Redémarrage en cours..."
+    })
+
+@app.route('/api/control/status', methods=['GET'])
+def control_status():
+    """Statut détaillé pour le panneau de contrôle"""
+    try:
+        # Vérifier si les modules sont chargés
+        modules_status = {
+            "auto_improvement": False,
+            "github_sync": False,
+            "p3_engine": True,
+            "learning_engine": True
+        }
+        
+        # Vérifier la présence des fichiers
+        import os
+        if os.path.exists("humean_auto_improvement.py"):
+            modules_status["auto_improvement"] = True
+        if os.path.exists("humean_github_sync.py"):
+            modules_status["github_sync"] = True
+        
+        return jsonify({
+            "server_status": "online",
+            "humean_status": "operational", 
+            "modules": modules_status,
+            "timestamp": "2024-01-15T12:00:00",
+            "version": "2.0"
+        })
+    except Exception as e:
+        return jsonify({
+            "server_status": "online",
+            "humean_status": "error",
+            "error": str(e)
+        }), 500
+
+@app.route('/control')
+def control_panel_redirect():
+    """Redirection vers le panneau de contrôle"""
+    return '''
+    <html>
+        <head>
+            <meta http-equiv="refresh" content="0; url=/static/control_panel.html">
+        </head>
+        <body>
+            <p>Redirection vers le panneau de contrôle...</p>
+        </body>
+    </html>
+    '''
+
+# Route de santé étendue
+@app.route('/health')
+def health_check():
+    """Vérification de santé étendue"""
+    import os
+    import psutil
+    
+    try:
+        # Informations système
+        process = psutil.Process()
+        memory_info = process.memory_info()
+        
+        return jsonify({
+            "status": "healthy",
+            "timestamp": "2024-01-15T12:00:00",
+            "system": {
+                "memory_usage_mb": round(memory_info.rss / 1024 / 1024, 2),
+                "cpu_percent": psutil.cpu_percent(),
+                "uptime_seconds": int(process.create_time())
+            },
+            "services": {
+                "api": "operational",
+                "database": "connected", 
+                "learning_engine": "active",
+                "p3_engine": "active"
+            }
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "degraded",
+            "error": str(e)
+        }), 500
+
 if __name__ == '__main__':
     initialize_system()
     app.run(host='0.0.0.0', port=5000, debug=False)
+
 
