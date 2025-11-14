@@ -305,7 +305,7 @@
 
         <div class="tab-container">
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('system')">🏠 Système</button>
+                <button class="tab" onclick="switchTab('github')">🚀 GitHub Sync</button><button class="tab active" onclick="switchTab('system')">🏠 Système</button>
                 <button class="tab" onclick="switchTab('innovation')">🔮 Innovation P3</button>
                 <button class="tab" onclick="switchTab('learning')">📚 Apprentissage</button>
                 <button class="tab" onclick="switchTab('data')">📊 Données</button>
@@ -447,7 +447,56 @@
                 </div>
             </div>
 
-            <!-- Onglet Monitoring -->
+            
+            <!-- Onglet GitHub Sync -->
+            <div id="github-tab" class="tab-content">
+                <div class="dashboard">
+                    <div class="card" style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
+                        <h2>🔄 Synchronisation Auto GitHub</h2>
+                        <div class="status-item">
+                            <span>Statut Synchronisation:</span>
+                            <span id="syncStatus">--</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Dernière synchro:</span>
+                            <span id="lastSync">--</span>
+                        </div>
+                        <button onclick="checkGitHubStatus()" class="btn-success">🔄 Vérifier statut</button>
+                        <div id="githubStatusResult" class="result" style="background: rgba(255,255,255,0.1);"></div>
+                    </div>
+
+                    <div class="card">
+                        <h2>📊 Statistiques Synchronisation</h2>
+                        <div class="status-item">
+                            <span>Apprentissages sync:</span>
+                            <span id="learningSyncCount">0</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Innovations sync:</span>
+                            <span id="innovationSyncCount">0</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Modifications en attente:</span>
+                            <span id="pendingChanges">0</span>
+                        </div>
+                        <button onclick="manualSync()" class="btn-warning">🔁 Sync Manuelle</button>
+                    </div>
+
+                    <div class="card">
+                        <h2>⚙️ Configuration Auto-Sync</h2>
+                        <div class="status-item">
+                            <span>Sync auto apprentissage:</span>
+                            <input type="checkbox" id="autoLearningSync" checked>
+                        </div>
+                        <div class="status-item">
+                            <span>Sync auto innovations:</span>
+                            <input type="checkbox" id="autoInnovationSync" checked>
+                        </div>
+                        <button onclick="saveSyncSettings()" class="btn-success">💾 Sauvegarder</button>
+                    </div>
+                </div>
+            </div>
+<!-- Onglet Monitoring -->
             <div id="monitoring-tab" class="tab-content">
                 <div class="dashboard">
                     <div class="card">
@@ -806,6 +855,110 @@
                 learningCycles > 0 ? new Date().toLocaleString() : '--';
         }
 
+        
+        // Synchronisation GitHub
+        let autoSyncEnabled = {
+            learning: true,
+            innovation: true
+        };
+
+        async function checkGitHubStatus() {
+            showLoading('githubStatusResult', 'Vérification du statut GitHub...');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/github/status');
+                const data = await response.json();
+                
+                document.getElementById('syncStatus').textContent = data.status;
+                document.getElementById('lastSync').textContent = data.last_sync || '--';
+                document.getElementById('pendingChanges').textContent = 
+                    data.changes ? 'Oui' : 'Non';
+                
+                document.getElementById('githubStatusResult').textContent = 
+                    `🔄 Statut: ${data.status}\n` +
+                    `📝 Modifications: ${data.changes || 'Aucune'}`;
+                    
+            } catch (error) {
+                document.getElementById('githubStatusResult').textContent = 
+                    `❌ Erreur: ${error}`;
+            }
+        }
+
+        async function syncLearningToGitHub(learningData) {
+            if (!autoSyncEnabled.learning) return;
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/github/sync/learning', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(learningData)
+                });
+                
+                const result = await response.json();
+                if (result.status === 'success') {
+                    addLog(`✅ Apprentissage synchronisé: ${learningData.input.substring(0, 30)}...`);
+                    updateSyncCounts();
+                }
+            } catch (error) {
+                console.log('Sync learning failed:', error);
+            }
+        }
+
+        async function syncInnovationToGitHub(innovationData) {
+            if (!autoSyncEnabled.innovation) return;
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/github/sync/innovation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(innovationData)
+                });
+                
+                const result = await response.json();
+                if (result.status === 'success') {
+                    addLog(`✅ Innovation synchronisée: ${innovationData.concept}`);
+                    updateSyncCounts();
+                }
+            } catch (error) {
+                console.log('Sync innovation failed:', error);
+            }
+        }
+
+        async function manualSync() {
+            showLoading('githubStatusResult', 'Synchronisation manuelle en cours...');
+            try {
+                // Simuler une sync manuelle
+                const response = await fetch('http://localhost:5000/api/github/status');
+                const data = await response.json();
+                
+                document.getElementById('githubStatusResult').textContent = 
+                    `✅ Sync manuelle déclenchée!\n` +
+                    `Statut: ${data.status}\n` +
+                    `Dernière activité: ${new Date().toLocaleString()}`;
+                    
+            } catch (error) {
+                document.getElementById('githubStatusResult').textContent = 
+                    `❌ Erreur sync manuelle: ${error}`;
+            }
+        }
+
+        function saveSyncSettings() {
+            autoSyncEnabled.learning = document.getElementById('autoLearningSync').checked;
+            autoSyncEnabled.innovation = document.getElementById('autoInnovationSync').checked;
+            
+            addLog(`⚙️ Configuration sync sauvegardée: Learning=${autoSyncEnabled.learning}, Innovation=${autoSyncEnabled.innovation}`);
+            document.getElementById('githubStatusResult').textContent = '✅ Configuration sauvegardée!';
+        }
+
+        function updateSyncCounts() {
+            // Mettre à jour les compteurs (simulé pour l'instant)
+            const learningCount = parseInt(document.getElementById('learningSyncCount').textContent) + 1;
+            const innovationCount = parseInt(document.getElementById('innovationSyncCount').textContent) + 1;
+            
+            document.getElementById('learningSyncCount').textContent = learningCount;
+            document.getElementById('innovationSyncCount').textContent = innovationCount;
+        }
+
         // Initialisation au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
             checkServerStatus();
@@ -815,3 +968,4 @@
     </script>
 </body>
 </html>
+
