@@ -1,0 +1,26 @@
+﻿__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+*.db
+*.sqlite3
+.DS_Store
+Thumbs.db
+# Secrets & env
+data/.env
+*.key
+*.pem
+
+# Backup zip local
+backup_humean_*.zip
+# Secrets
+data/.env
+*.key
+*.pem
+
+# Backups locaux
+backup_humean_*.zip

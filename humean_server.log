@@ -1,0 +1,65 @@
+2025-11-15 20:43:03,806 - HumeanServer - INFO -    GET  /              - Dashboard
+2025-11-15 20:43:03,808 - HumeanServer - INFO -    POST /api/query     - Requêtes IA
+2025-11-15 20:43:03,808 - HumeanServer - INFO -    GET  /api/health    - Statut serveur
+2025-11-15 20:43:03,810 - HumeanServer - INFO -    POST /api/feedback  - Feedback
+2025-11-15 20:43:03,810 - HumeanServer - INFO -    GET  /api/models    - Modèles disponibles
+2025-11-15 20:43:03,811 - HumeanServer - INFO -    GET  /api/system-status - Statut détaillé
+2025-11-15 20:43:03,887 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-11-15 20:43:03,898 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-11-15 20:43:32,408 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:43:32] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:43:32,654 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:43:32] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:44:23,672 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:44:23] "GET / HTTP/1.1" 200 -
+2025-11-15 20:44:32,100 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:44:32] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:44:32,420 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:44:32] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:44:47,738 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:44:47] "GET /api/health HTTP/1.1" 200 -
+2025-11-15 20:44:59,338 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:44:59] "GET /api/system-status HTTP/1.1" 200 -
+2025-11-15 20:45:02,311 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:45:02] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:45:02,563 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:45:02] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:45:03,076 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:45:03] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:45:06,385 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:45:06] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:45:09,079 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:45:09] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:45:12,390 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:45:12] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:45:15,073 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:45:15] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:45:18,383 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:45:18] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:45:21,070 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:45:21] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:45:33,065 - HumeanServer - INFO -    GET  /              - Dashboard
+2025-11-15 20:45:33,066 - HumeanServer - INFO -    POST /api/query     - Requêtes IA
+2025-11-15 20:45:33,071 - HumeanServer - INFO -    GET  /api/health    - Statut serveur
+2025-11-15 20:45:33,080 - HumeanServer - INFO -    POST /api/feedback  - Feedback
+2025-11-15 20:45:33,080 - HumeanServer - INFO -    GET  /api/models    - Modèles disponibles
+2025-11-15 20:45:33,080 - HumeanServer - INFO -    GET  /api/system-status - Statut détaillé
+2025-11-15 20:45:33,152 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-11-15 20:45:33,165 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-11-15 20:46:06,121 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:46:06] "GET / HTTP/1.1" 200 -
+2025-11-15 20:47:03,299 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:47:03] "GET / HTTP/1.1" 200 -
+2025-11-15 20:49:06,428 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:49:06] "[33mGET /%20-%20Dashboard HTTP/1.1[0m" 404 -
+2025-11-15 20:49:30,761 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:49:30] "[33mGET /api/health%20-%20Statut%20serveur HTTP/1.1[0m" 404 -
+2025-11-15 20:49:58,024 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:49:58] "GET /api/health HTTP/1.1" 200 -
+2025-11-15 20:51:04,779 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:51:04] "GET / HTTP/1.1" 200 -
+2025-11-15 20:51:05,302 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:51:05] "GET /api/health HTTP/1.1" 200 -
+2025-11-15 20:51:05,829 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:51:05] "GET /api/system-status HTTP/1.1" 200 -
+2025-11-15 20:51:06,372 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:51:06] "GET /api/models HTTP/1.1" 200 -
+2025-11-15 20:51:06,900 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:51:06] "[33mGET /status HTTP/1.1[0m" 404 -
+2025-11-15 20:51:07,568 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:51:07] "GET / HTTP/1.1" 200 -
+2025-11-15 20:51:09,032 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:51:09] "GET /api/models HTTP/1.1" 200 -
+2025-11-15 20:51:09,176 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:51:09] "GET /api/system-status HTTP/1.1" 200 -
+2025-11-15 20:51:09,758 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:51:09] "GET / HTTP/1.1" 200 -
+2025-11-15 20:55:04,589 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 20:55:04] "GET / HTTP/1.1" 200 -
+2025-11-15 20:59:11,305 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-11-15 20:59:11,310 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-11-15 21:00:26,098 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:00:26] "GET / HTTP/1.1" 200 -
+2025-11-15 21:03:10,095 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:03:10] "GET / HTTP/1.1" 200 -
+2025-11-15 21:03:13,041 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:03:13] "GET / HTTP/1.1" 200 -
+2025-11-15 21:03:19,597 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:03:19] "GET /api/health HTTP/1.1" 200 -
+2025-11-15 21:03:39,597 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:03:39] "GET / HTTP/1.1" 200 -
+2025-11-15 21:05:30,164 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:05:30] "GET / HTTP/1.1" 200 -
+2025-11-15 21:05:48,753 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:05:48] "GET / HTTP/1.1" 200 -
+2025-11-15 21:09:50,776 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:09:50] "GET / HTTP/1.1" 200 -
+2025-11-15 21:09:57,298 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:09:57] "GET / HTTP/1.1" 200 -
+2025-11-15 21:10:48,579 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:10:48] "GET / HTTP/1.1" 200 -
+2025-11-15 21:10:51,500 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:10:51] "GET / HTTP/1.1" 200 -
+2025-11-15 21:12:39,551 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:12:39] "GET / HTTP/1.1" 200 -
+2025-11-15 21:14:10,585 - werkzeug - INFO - 127.0.0.1 - - [15/Nov/2025 21:14:10] "GET / HTTP/1.1" 200 -

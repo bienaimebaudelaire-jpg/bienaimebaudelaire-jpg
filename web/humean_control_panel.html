@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HUMEAN Control Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .online { background: #d4edda; color: #155724; }
+        .offline { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; margin: 5px; }
+        .improvement { background: #e2e3e5; padding: 10px; margin: 5px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>HUMEAN Control Panel</h1>
+    <p>Panneau de contrôle avancé</p>
+    
+    <div id="status" class="status">
+        Vérification du statut...
+    </div>
+    
+    <button onclick="getSystemStatus()">Vérifier le statut</button>
+    <button onclick="startLearning()">Démarrer l'Apprentissage</button>
+    <button onclick="analyzeInfrastructure()">Analyser Infrastructure</button>
+    <button onclick="getInsights()">Obtenir des insights</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:5000/api';
+        
+        async function getSystemStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/status`);
+                const data = await response.json();
+                document.getElementById('status').innerHTML = 
+                    `?? API: ${data.api_status}<br>?? ${data.innovations}<br>?? ${data.cycles_apprentissage} cycles<br>?? ${data.apprentissage_conceptuel}`;
+                document.getElementById('status').className = 'status online';
+            } catch (error) {
+                document.getElementById('status').innerHTML = '? Serveur inaccessible: ' + error.message;
+                document.getElementById('status').className = 'status offline';
+            }
+        }
+        
+        async function startLearning() {
+            try {
+                const response = await fetch(`${API_BASE}/start-learning`, { method: 'POST' });
+                const data = await response.json();
+                let html = `<h3>?? Apprentissage Démarré:</h3>`;
+                data.ameliorations.forEach(imp => {
+                    html += `<div class="improvement">${imp}</div>`;
+                });
+                document.getElementById('results').innerHTML = html;
+            } catch (error) {
+                document.getElementById('results').innerHTML = '? Erreur: ' + error.message;
+            }
+        }
+        
+        async function analyzeInfrastructure() {
+            try {
+                const response = await fetch(`${API_BASE}/analyze-infrastructure`);
+                const data = await response.json();
+                let html = `<h3>?? Analyse Infrastructure:</h3>`;
+                data.analyse.forEach(item => {
+                    html += `<div class="improvement">${item}</div>`;
+                });
+                document.getElementById('results').innerHTML = html;
+            } catch (error) {
+                document.getElementById('results').innerHTML = '? Erreur: ' + error.message;
+            }
+        }
+        
+        async function getInsights() {
+            try {
+                const response = await fetch(`${API_BASE}/insights`);
+                const data = await response.json();
+                document.getElementById('results').innerHTML = 
+                    `<h3>?? Insight:</h3><p>${data.insight}</p>`;
+            } catch (error) {
+                document.getElementById('results').innerHTML = '? Erreur: ' + error.message;
+            }
+        }
+        
+        // Vérification automatique au chargement
+        getSystemStatus();
+    </script>
+</body>
+</html>
+

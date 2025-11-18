@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 GUIDE HUMEAN - Démarrage</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+        .step-number {
+            background: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .file-button {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .file-button:hover {
+            background: #219652;
+        }
+        .screenshot {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 GUIDE DE DÉMARRAGE HUMEAN</h1>
+        
+        <div class="step">
+            <h3><span class="step-number">1</span> DÉMARRER LE SERVEUR</h3>
+            <p>Double-cliquez sur ce fichier :</p>
+            <a class="file-button" href="START_SERVER.bat">🚀 START_SERVER.bat</a>
+            <p>Une fenêtre noire va s'ouvrir - <strong>NE LA FERMEZ PAS</strong> !</p>
+            <div class="screenshot">
+                ✅ Vous devriez voir :<br>
+                "🧠 HUMEAN v2.0"<br>
+                "Démarrage du serveur cognitif..."<br>
+                "Serveur démarré sur http://localhost:5000"
+            </div>
+        </div>
+
+        <div class="step">
+            <h3><span class="step-number">2</span> OUVRIR LE LAUNCH CENTER</h3>
+            <p>Double-cliquez sur ce fichier :</p>
+            <a class="file-button" href="LAUNCH_CENTER.html">🎯 LAUNCH_CENTER.html</a>
+            <p>Le statut devrait passer à <strong style="color: #27ae60;">EN LIGNE</strong></p>
+        </div>
+
+        <div class="step">
+            <h3><span class="step-number">3</span> UTILISER HUMEAN</h3>
+            <p>Depuis le Launch Center, vous pouvez :</p>
+            <a class="file-button" href="http://localhost:5000">📊 Dashboard Principal</a>
+            <a class="file-button" href="humean_dashboard.html">🎨 Dashboard Complet</a>
+            <a class="file-button" href="humean_control_panel.html">🎛️ Panneau Contrôle</a>
+        </div>
+
+        <div class="step">
+            <h3><span class="step-number">❓</span> EN CAS DE PROBLÈME</h3>
+            <p><strong>Le serveur ne démarre pas ?</strong></p>
+            <ol>
+                <li>Vérifiez que Python est installé : ouvrez un terminal et tapez <code>python --version</code></li>
+                <li>Installez les dépendances : <code>pip install flask requests</code></li>
+                <li>Redémarrez l'ordinateur</li>
+                <li>Relancez <strong>START_SERVER.bat</strong></li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3><span class="step-number">🎯</span> RÉSUMÉ RAPIDE</h3>
+            <p><strong>Pour utiliser HUMEAN rapidement :</strong></p>
+            <ol>
+                <li>Double-clic sur <strong>START_SERVER.bat</strong></li>
+                <li>Double-clic sur <strong>LAUNCH_CENTER.html</strong></li>
+                <li>Cliquez sur "📊 DASHBOARD"</li>
+                <li>Explorez ! 🚀</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

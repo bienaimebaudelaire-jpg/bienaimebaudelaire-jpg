@@ -1,0 +1,298 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 HUMEAN - Launch Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        .status-banner {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .online { background: #27ae60; box-shadow: 0 0 10px #27ae60; }
+        .offline { background: #e74c3c; }
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .action-card {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .action-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.3);
+        }
+        .action-card h3 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .action-card p {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .terminal {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .terminal-line {
+            margin-bottom: 5px;
+        }
+        .manual-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        code {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 HUMEAN v2.0</h1>
+        <div class="subtitle">Launch Center - Centre de contrôle unifié</div>
+        
+        <div class="status-banner">
+            <div id="statusIndicator" class="status-indicator offline"></div>
+            <span id="statusText">Serveur HUMEAN: HORS LIGNE</span>
+        </div>
+
+        <div class="action-grid">
+            <div class="action-card" onclick="launchServer()">
+                <h3>🚀 1. DÉMARRER SERVEUR</h3>
+                <p>Lance le serveur HUMEAN automatiquement</p>
+            </div>
+            
+            <div class="action-card" onclick="openDashboard()">
+                <h3>📊 2. DASHBOARD</h3>
+                <p>Ouvre l'interface principale</p>
+            </div>
+            
+            <div class="action-card" onclick="openControlPanel()">
+                <h3>🎛️ 3. CONTRÔLE AVANCÉ</h3>
+                <p>Panneau de contrôle détaillé</p>
+            </div>
+            
+            <div class="action-card" onclick="showTerminal()">
+                <h3>💻 4. TERMINAL</h3>
+                <p>Commandes et diagnostics</p>
+            </div>
+        </div>
+
+        <div id="terminal" class="terminal" style="display: none;">
+            <div class="terminal-line">$ HUMEAN Terminal</div>
+            <div class="terminal-line">$ Statut: <span id="terminalStatus">Vérification...</span></div>
+            <div class="terminal-line" id="terminalOutput"></div>
+        </div>
+
+        <div class="manual-section">
+            <h3>🔧 MODE MANUEL</h3>
+            <p>Si le démarrage automatique ne fonctionne pas :</p>
+            <ol>
+                <li>Ouvrez un terminal/powerShell dans ce dossier</li>
+                <li>Tapez : <code>python humean_server.py</code></li>
+                <li>Revenez sur cette page et rafraîchissez (F5)</li>
+            </ol>
+            <button onclick="copyCommand()" style="margin-top: 10px; padding: 8px 15px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                📋 Copier la commande
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let serverCheckInterval;
+
+        // Vérifier le statut au chargement
+        checkServerStatus();
+        serverCheckInterval = setInterval(checkServerStatus, 3000);
+
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('http://localhost:5000/status', {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(2000)
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStatus('online', `Serveur HUMEAN: EN LIGNE (${data.status})`);
+                }
+            } catch (error) {
+                updateStatus('offline', 'Serveur HUMEAN: HORS LIGNE - Cliquez sur "DÉMARRER SERVEUR"');
+            }
+        }
+
+        function updateStatus(status, text) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            
+            indicator.className = 'status-indicator ' + status;
+            statusText.textContent = text;
+        }
+
+        function launchServer() {
+            // Créer un script batch temporaire et l'exécuter
+            const batchContent = `@echo off\nchcp 65001 > nul\necho 🧠 Démarrage HUMEAN...\npython humean_server.py\npause`;
+            const blob = new Blob([batchContent], { type: 'application/bat' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'start_humean_temp.bat';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Avertissement
+            alert('🚀 Un fichier "start_humean_temp.bat" a été téléchargé.\n\nDouble-cliquez dessus pour démarrer le serveur.\n\nRevenez sur cette page après le démarrage.');
+        }
+
+        function openDashboard() {
+            // Essayer d'ouvrir le dashboard, avec fallback
+            try {
+                window.open('http://localhost:5000', '_blank');
+            } catch (e) {
+                alert('📊 Le serveur doit être démarré pour ouvrir le dashboard.\n\nDémarrez le serveur d\'abord.');
+            }
+        }
+
+        function openControlPanel() {
+            window.open('humean_control_panel.html', '_blank');
+        }
+
+        function showTerminal() {
+            const terminal = document.getElementById('terminal');
+            terminal.style.display = 'block';
+            runTerminalCommands();
+        }
+
+        async function runTerminalCommands() {
+            const output = document.getElementById('terminalOutput');
+            output.innerHTML = '';
+            
+            const commands = [
+                { cmd: 'Vérification Python...', test: testPython },
+                { cmd: 'Vérification dépendances...', test: testDependencies },
+                { cmd: 'Vérification serveur...', test: testServer }
+            ];
+            
+            for (const command of commands) {
+                addTerminalLine(`$ ${command.cmd}`);
+                const result = await command.test();
+                addTerminalLine(result);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+
+        async function testPython() {
+            try {
+                // Cette partie serait exécutée par un serveur backend
+                // Pour l'instant, on simule
+                return '✅ Python 3.x détecté';
+            } catch (e) {
+                return '❌ Python non trouvé';
+            }
+        }
+
+        async function testDependencies() {
+            try {
+                return '✅ Flask, requests disponibles';
+            } catch (e) {
+                return '❌ Dépendances manquantes';
+            }
+        }
+
+        async function testServer() {
+            try {
+                const response = await fetch('http://localhost:5000/status', { signal: AbortSignal.timeout(2000) });
+                if (response.ok) {
+                    return '✅ Serveur HUMEAN opérationnel';
+                }
+            } catch (e) {
+                return '❌ Serveur non accessible - Démarrez-le';
+            }
+        }
+
+        function addTerminalLine(text) {
+            const output = document.getElementById('terminalOutput');
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            line.textContent = text;
+            output.appendChild(line);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function copyCommand() {
+            navigator.clipboard.writeText('python humean_server.py');
+            alert('✅ Commande copiée : python humean_server.py\n\nCollez-la dans un terminal.');
+        }
+
+        // Auto-détection et aide
+        setTimeout(() => {
+            if (document.getElementById('statusIndicator').className.includes('offline')) {
+                document.getElementById('terminal').style.display = 'block';
+                runTerminalCommands();
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+﻿#!/usr/bin/env python3
+"""
+🧪 Test du système d'auto-amélioration HUMEAN
+"""
+
+from src.core.humean_auto_improvement import src.core.humean_auto_improver
+
+def test_auto_improvement():
+    print("🚀 TEST AUTO-AMÉLIORATION HUMEAN")
+    print("=" * 50)
+    
+    # Lancer l'auto-amélioration
+    result = humean_auto_improver.analyze_and_apply(
+        "Analyse ton infrastructure et applique les améliorations critiques"
+    )
+    
+    # Afficher les résultats
+    print(f"📊 Analyse: {len(result['analysis']['identified_issues'])} problèmes identifiés")
+    print(f"🔧 Plan: {result['improvement_plan']['total_actions']} actions générées")
+    print(f"🚀 Implémentation: {result['implementation_results']['completed_actions']} actions complétées")
+    
+    print("\n📁 FICHIERS CRÉÉS:")
+    for detail in result['implementation_results']['details']:
+        if detail['status'] == 'COMPLETED':
+            print(f"   ✅ {detail['file']} - {detail['impact']}")
+    
+    print("\n🎉 HUMEAN s'est auto-amélioré avec succès!")
+
+if __name__ == "__main__":
+    test_auto_improvement()

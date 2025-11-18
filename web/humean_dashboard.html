@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>HUMEAN PRO - OpenRouter & Gemini</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #0f172a; color: white; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: #1e293b; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .card { background: #1e293b; padding: 20px; border-radius: 10px; }
+        .status { background: #065f46; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .button { background: #3b82f6; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        .button:hover { background: #2563eb; }
+        .button-deepseek { background: #6366f1; }
+        .button-openai { background: #10b981; }
+        .button-openrouter { background: #f59e0b; }
+        .button-gemini { background: #8b5cf6; }
+        .button-humean { background: #ef4444; }
+        .result { background: #374151; padding: 15px; border-radius: 5px; margin-top: 15px; }
+        .chat-container { display: flex; flex-direction: column; height: 400px; }
+        .chat-messages { flex: 1; overflow-y: auto; margin-bottom: 10px; }
+        .chat-input { display: flex; gap: 10px; }
+        .chat-input input { flex: 1; padding: 10px; border-radius: 5px; border: none; }
+        .message { padding: 10px; margin: 5px 0; border-radius: 5px; }
+        .user-message { background: #3b82f6; text-align: right; }
+        .ai-message { background: #059669; }
+        .ia-selector { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+        .ia-option { padding: 8px 15px; border: 1px solid #3b82f6; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .ia-option.active { background: #3b82f6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 HUMEAN PRO - OPENROUTER & GEMINI</h1>
+            <p>Accès à 100+ modèles IA • Multi-connecteurs • Auto-apprentissage</p>
+        </div>
+
+        <div class="grid">
+            <!-- STATUT SYSTÈME -->
+            <div class="card">
+                <h2>📊 Statut Cognitif</h2>
+                <div id="systemStatus" class="status">Chargement du système multi-IA...</div>
+                <button class="button" onclick="getSystemStatus()">🔄 Actualiser Statut</button>
+                <button class="button button-openrouter" onclick="startLearning()">🧠 Apprentissage Avancé</button>
+            </div>
+
+            <!-- ARCHITECTURE IA -->
+            <div class="card">
+                <h2>🏗️ Architecture Cognitive</h2>
+                <p>4 connecteurs IA + OpenRouter (100+ modèles)</p>
+                <button class="button" onclick="analyzeArchitecture()">🔍 Analyser Architecture</button>
+                <button class="button" onclick="getInsights()">📈 Insights Cognitifs</button>
+                <div id="architectureResult" class="result"></div>
+            </div>
+        </div>
+
+        <!-- INTERFACE DE CHAT AVEC OPENROUTER & GEMINI -->
+        <div class="card">
+            <h2>💬 Dialogue Multi-IA HUMEAN</h2>
+            
+            <div class="ia-selector">
+                <div class="ia-option active" onclick="selectIA('auto')">🔄 Auto</div>
+                <div class="ia-option" onclick="selectIA('humean')">🧠 HUMEAN</div>
+                <div class="ia-option" onclick="selectIA('deepseek')">🔷 DeepSeek</div>
+                <div class="ia-option" onclick="selectIA('chatgpt')">🤖 ChatGPT</div>
+                <div class="ia-option" onclick="selectIA('openrouter')">🌐 OpenRouter</div>
+                <div class="ia-option" onclick="selectIA('gemini')">⚡ Gemini</div>
+            </div>
+
+            <div class="chat-container">
+                <div id="chatMessages" class="chat-messages">
+                    <div class="message ai-message">
+                        <strong>HUMEAN:</strong> Bonjour ! Je suis HUMEAN Pro avec OpenRouter & Gemini. Je peux accéder à 100+ modèles IA. Posez-moi une question !
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" id="questionInput" placeholder="Posez votre question au système multi-IA..." onkeypress="handleKeyPress(event)">
+                    <button class="button button-openrouter" onclick="sendMessage()">➤ Envoyer</button>
+                </div>
+            </div>
+            
+            <div id="chatResult" class="result"></div>
+        </div>
+
+        <!-- RÉSULTATS COGNITIFS -->
+        <div class="card">
+            <h2>📋 Activité Cognitive en Temps Réel</h2>
+            <div id="cognitiveActivity" class="result">
+                Système HUMEAN Pro avec OpenRouter & Gemini initialisé.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:5000/api';
+        let selectedIA = 'auto';
+        let conversationHistory = [];
+
+        // 🎯 FONCTIONS PRINCIPALES
+        async function getSystemStatus() {
+            try {
+                showLoading('systemStatus');
+                const response = await fetch(API_BASE + '/status');
+                const data = await response.json();
+                
+                document.getElementById('systemStatus').innerHTML = `
+                    <strong>API:</strong> ${data.api_status}<br>
+                    <strong>Innovations:</strong> ${data.innovations}<br>
+                    <strong>Cycles:</strong> ${data.cycles_apprentissage}<br>
+                    <strong>Conversations:</strong> ${data.conversations}<br>
+                    <strong>IA Connectées:</strong> ${data.ias_connectees.join(', ')}
+                `;
+                
+                logActivity('✅ Statut système actualisé');
+            } catch (error) {
+                showError('systemStatus', error);
+            }
+        }
+
+        function selectIA(iaType) {
+            selectedIA = iaType;
+            document.querySelectorAll('.ia-option').forEach(opt => opt.classList.remove('active'));
+            event.target.classList.add('active');
+            logActivity(`🔗 IA sélectionnée: ${iaType}`);
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('questionInput');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            // Ajouter le message utilisateur
+            addMessage(question, 'user');
+            input.value = '';
+            
+            try {
+                showLoading('chatResult');
+                const response = await fetch(API_BASE + '/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: question, ia_type: selectedIA })
+                });
+                
+                const data = await response.json();
+                
+                // Ajouter la réponse IA
+                addMessage(data.reponse, 'ai', data.source);
+                
+                // Afficher les détails
+                document.getElementById('chatResult').innerHTML = `
+                    <strong>Source:</strong> ${data.source} | 
+                    <strong>Confiance:</strong> ${data.confiance} |
+                    <strong>Apprentissage:</strong> ${data.apprentissage || 'Nouvelle interaction'}
+                `;
+                
+                logActivity(`💬 ${data.source}: "${question.substring(0, 30)}..."`);
+                
+            } catch (error) {
+                addMessage("❌ Erreur de connexion au système cognitif", 'ai', 'Système');
+                showError('chatResult', error);
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function addMessage(text, type, source = 'HUMEAN') {
+            const messages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            messageDiv.innerHTML = `<strong>${source}:</strong> ${text}`;
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function startLearning() {
+            try {
+                const response = await fetch(API_BASE + '/start-learning', { method: 'POST' });
+                const data = await response.json();
+                
+                let html = `<h3>${data.status}</h3>`;
+                data.innovations.forEach(innovation => {
+                    html += `<div class="status">${innovation}</div>`;
+                });
+                
+                document.getElementById('architectureResult').innerHTML = html;
+                logActivity('🧠 Cycle d\'apprentissage avancé démarré');
+                getSystemStatus();
+                
+            } catch (error) {
+                showError('architectureResult', error);
+            }
+        }
+
+        async function analyzeArchitecture() {
+            try {
+                showLoading('architectureResult');
+                const response = await fetch(API_BASE + '/analyze-architecture');
+                const data = await response.json();
+                
+                let html = '<h3>🔍 Analyse Architecture Cognitive:</h3>';
+                data.analyse.forEach(item => {
+                    html += `<div class="status">${item}</div>`;
+                });
+                
+                document.getElementById('architectureResult').innerHTML = html;
+                logActivity('🏗️ Analyse d\'architecture cognitive effectuée');
+                
+            } catch (error) {
+                showError('architectureResult', error);
+            }
+        }
+
+        async function getInsights() {
+            try {
+                const response = await fetch(API_BASE + '/insights');
+                const data = await response.json();
+                logActivity(`📈 Insight cognitif: ${data.insight}`);
+            } catch (error) {
+                logActivity('❌ Erreur lors de la récupération des insights');
+            }
+        }
+
+        // 🛠️ FONCTIONS UTILITAIRES
+        function showLoading(elementId) {
+            document.getElementById(elementId).innerHTML = '⏳ Chargement cognitif...';
+        }
+
+        function showError(elementId, error) {
+            document.getElementById(elementId).innerHTML = `❌ Erreur: ${error.message}`;
+        }
+
+        function logActivity(message) {
+            const now = new Date().toLocaleTimeString();
+            const activity = document.getElementById('cognitiveActivity');
+            activity.innerHTML = `<div class="status">[${now}] ${message}</div>` + activity.innerHTML;
+        }
+
+        // 🚀 INITIALISATION
+        document.addEventListener('DOMContentLoaded', function() {
+            getSystemStatus();
+            logActivity('🚀 HUMEAN Pro avec OpenRouter & Gemini initialisé');
+        });
+    </script>
+</body>
+</html>
+
