@@ -1,7 +1,7 @@
-# Salut, je suis 4UsByUs 👋
+# # Salut, je suis 4UsByUs 👋
 
-Je travaille actuellement sur **HUMEAN / OmniRoute** — une infrastructure d'orchestration IA gouvernée, avec des applications spécialisées par-dessus (comparateur d'abonnements, assistant de temps libre).
+Je construis **HUMEAN** — une infrastructure d'orchestration IA, avec des applications spécialisées par-dessus (comparateur d'abonnements, assistant de temps libre).
 
 ➡️ Repo actif : [`humean-ecosystem`](https://github.com/bienaimebaudelaire-jpg/humean-ecosystem)
 
-> ⚠️ Ce dépôt est le dépôt de profil GitHub. L'ancien prototype exploratoire qui s'y trouvait a été retiré pour des raisons de sécurité (serveur exposé, endpoints sans authentification). Il reste consultable dans l'historique git. Le développement actif se passe dans `humean-ecosystem`.
+> ⚠️  Ce dépôt est le README de profil. Un ancien prototype exploratoire (serveur exposé, endpoints non authentifiés) a été retiré ; il reste dans l'historique git. Le développement actif est dans `humean-ecosystem`
