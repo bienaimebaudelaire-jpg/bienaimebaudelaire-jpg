@@ -4,4 +4,4 @@ Je travaille actuellement sur **HUMEAN / OmniRoute** — une infrastructure d'or
 
 ➡️ Repo actif : [`humean-ecosystem`](https://github.com/bienaimebaudelaire-jpg/humean-ecosystem)
 
-> ⚠️ Les fichiers présents dans **ce** dépôt (`LAUNCH_HUMEAN.bat`, `humean_server.py`, etc.) sont un ancien prototype exploratoire, conservé pour historique mais non maintenu. Le développement actif se passe dans `humean-ecosystem`.
+> ⚠️ Ce dépôt est le dépôt de profil GitHub. L'ancien prototype exploratoire qui s'y trouvait a été retiré pour des raisons de sécurité (serveur exposé, endpoints sans authentification). Il reste consultable dans l'historique git. Le développement actif se passe dans `humean-ecosystem`.
