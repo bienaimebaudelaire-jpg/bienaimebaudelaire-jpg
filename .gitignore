@@ -1,4 +1,4 @@
-﻿__pycache__/
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
@@ -8,16 +8,11 @@ venv/
 .venv/
 *.db
 *.sqlite3
+*.log
 .DS_Store
 Thumbs.db
-# Secrets & env
-data/.env
-*.key
-*.pem
 
-# Backup zip local
-backup_humean_*.zip
-# Secrets
+# Secrets & env
 data/.env
 *.key
 *.pem
