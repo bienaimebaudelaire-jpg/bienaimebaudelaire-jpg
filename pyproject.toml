@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=78.1.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "humean-openshell-integration"
+version = "0.1.0"
+description = "OpenShell command execution utilities for HUMEAN workflows"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+openshell = ["openshell>=0.1.2,<0.2"]
+
+[tool.setuptools.packages.find]
+include = ["humean_openshell*"]
